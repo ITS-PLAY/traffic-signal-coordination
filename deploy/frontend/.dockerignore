@@ -1,0 +1,13 @@
+# 临时截图与 Edge profile 目录
+_ep*
+_edgeprof*
+_*.png
+_*.json
+
+# 开发/测试文件
+sketch_dev.html
+test_codec.js
+test_draw.js
+codec.js
+.dockerignore
+Dockerfile

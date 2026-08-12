@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>绿波相位差配置与仿真平台 · ts-generator</title>
+<style>
+  :root {
+    --primary: #2563eb; --green: #16a34a; --red: #dc2626;
+    --border: #e2e8f0; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); }
+  header { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px;
+           display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  header h1 { font-size: 18px; margin: 0; flex: 1; }
+  button { cursor: pointer; border: 1px solid var(--border); background: #fff; border-radius: 6px;
+           padding: 6px 12px; font-size: 13px; color: var(--text); }
+  button:hover { border-color: var(--primary); color: var(--primary); }
+  button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  button.primary:hover { opacity: .9; }
+  button.danger:hover { border-color: var(--red); color: var(--red); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  nav.steps { display: flex; gap: 4px; background: var(--card); border-bottom: 1px solid var(--border);
+              padding: 0 24px; }
+  nav.steps .step { padding: 10px 18px; font-size: 14px; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; }
+  nav.steps .step.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+  main { max-width: 1180px; margin: 20px auto; padding: 0 20px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+  .card h3 { margin: 0 0 12px; font-size: 15px; }
+  .card h3 .hint { font-weight: 400; font-size: 12px; color: var(--muted); margin-left: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+  th { color: var(--muted); font-weight: 500; background: #f8fafc; }
+  input[type=text], input[type=number], select, textarea {
+    border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-family: inherit;
+    background: #fff; color: var(--text); }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #bfdbfe; border-color: var(--primary); }
+  input.num { width: 80px; }
+  textarea.code { width: 100%; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tabs .tab { padding: 6px 16px; border-radius: 999px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 13px; }
+  .tabs .tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  /* 路口配置：左侧导航栏 */
+  .cross-layout { display: grid; grid-template-columns: 210px 1fr; gap: 16px; align-items: start; }
+  .cross-nav { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 120px; }
+  .cross-nav .nav-title { font-size: 12px; color: var(--muted); padding: 0 2px; }
+  .cross-nav .citem { padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px;
+                      background: #fff; cursor: pointer; transition: all .15s; }
+  .cross-nav .citem:hover { border-color: #93c5fd; }
+  .cross-nav .citem.active { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 2px #bfdbfe; }
+  .cross-nav .citem .cid { font-size: 16px; font-weight: 700; }
+  .cross-nav .citem.active .cid { color: var(--primary); }
+  .cross-nav .citem .cinfo { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .cross-nav .cnav-btns { display: flex; gap: 6px; margin-top: 4px; }
+  .cross-nav .cnav-btns button { flex: 1; }
+  @media (max-width: 900px) { .cross-layout { grid-template-columns: 1fr; } .cross-nav { position: static; flex-direction: row; flex-wrap: wrap; } }
+  .lane-chip { display: inline-flex; align-items: center; gap: 2px; background: #eff6ff; border: 1px solid #bfdbfe;
+               border-radius: 4px; padding: 2px 6px; margin: 2px; font-size: 12px; cursor: pointer; }
+  .lane-chip:hover { background: #fee2e2; border-color: #fecaca; }
+  .encoded { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--muted);
+             background: #f8fafc; padding: 6px 10px; border-radius: 6px; margin-top: 8px; word-break: break-all; }
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .metric { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .metric .v { font-size: 22px; font-weight: 700; color: var(--primary); }
+  .metric .k { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .status { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin: 10px 0; }
+  .status.info { background: #eff6ff; color: #1d4ed8; }
+  .status.ok { background: #f0fdf4; color: #15803d; }
+  .status.err { background: #fef2f2; color: #b91c1c; white-space: pre-wrap; }
+  .step-actions { display: flex; justify-content: space-between; margin-top: 8px; }
+  .small { font-size: 12px; color: var(--muted); }
+  canvas { display: block; background: #fff; border: 1px solid var(--border); border-radius: 8px; max-width: 100%; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; }
+  .badge.old { background: #f1f5f9; color: var(--muted); }
+  .badge.new { background: #dcfce7; color: #15803d; font-weight: 600; }
+  .card-flex { display: flex; gap: 18px; align-items: flex-start; }
+  .card-flex .flex-main { flex: 1; min-width: 0; }
+  .sketch-box { flex: 0 0 330px; }
+  .sketch-box svg { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+  .sketch-box .sketch-cap { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
+  @media (max-width: 1200px) { .card-flex { flex-direction: column; } .sketch-box { flex-basis: auto; width: 100%; max-width: 460px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>绿波相位差配置与仿真平台</h1>
+  <button onclick="loadExample()">导入示例（数智路-胜塘坝）</button>
+  <button onclick="document.getElementById('importFile').click()">导入 JSON</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJson(event)">
+  <button onclick="exportJson()">导出 JSON</button>
+  <button class="danger" onclick="resetAll()">清空</button>
+</header>
+
+<nav class="steps">
+  <div class="step active" data-step="0" onclick="gotoStep(0)">① 基本设置</div>
+  <div class="step" data-step="1" onclick="gotoStep(1)">② 路段参数</div>
+  <div class="step" data-step="2" onclick="gotoStep(2)">③ 路口配置</div>
+  <div class="step" data-step="3" onclick="gotoStep(3)">④ 运行与结果</div>
+</nav>
+
+<main>
+  <!-- ============ 步骤 1：基本设置 ============ -->
+  <section class="panel active" id="panel-0">
+    <div class="card">
+      <h3>路口序列 <span class="hint">crossList：干线方向按顺序排列的路口编号</span></h3>
+      <div class="row">
+        <div class="field">
+          <label>路口数量</label>
+          <input type="number" id="crossCount" class="num" min="2" max="12" value="3" onchange="applyCrossCount()">
+        </div>
+        <div class="field" style="flex:1">
+          <label>路口编号（按顺序）</label>
+          <div class="row" id="crossIdEditor"></div>
+        </div>
+      </div>
+    </div>
+    <div class="step-actions"><span></span><button class="primary" onclick="gotoStep(1)">下一步：路段参数 →</button></div>
+  </section>
+
+  <!-- ============ 步骤 2：路段参数 ============ -->
+  <section class="panel" id="panel-1">
+    <div class="card">
+      <h3>相邻路口路段 <span class="hint">roadLength（米）与 roadSpeed（正向/反向推荐速度，km/h）</span></h3>
+      <table id="segmentTable">
+        <thead><tr><th>路段</th><th>长度（米）</th><th>正向速度（km/h）</th><th>反向速度（km/h）</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="step-actions">
+      <button onclick="gotoStep(0)">← 上一步</button>
+      <button class="primary" onclick="gotoStep(2)">下一步：路口配置 →</button>
+    </div>
+  </section>
+
+  <!-- ============ 步骤 3：路口配置 ============ -->
+  <section class="panel" id="panel-2">
+    <div class="cross-layout">
+      <aside class="cross-nav" id="crossTabs"></aside>
+      <div id="crossEditor"></div>
+    </div>
+    <div class="step-actions">
+      <button onclick="gotoStep(1)">← 上一步</button>
+      <button class="primary" onclick="gotoStep(3)">下一步：运行与结果 →</button>
+    </div>
+  </section>
+
+  <!-- ============ 步骤 4：运行与结果 ============ -->
+  <section class="panel" id="panel-3">
+    <div class="card">
+      <h3>算法配置 <span class="hint">config：发起计算前可在此调整</span></h3>
+      <div class="row">
+        <div class="field"><label>优化方向（正向/反向绿波）</label>
+          <div class="row">
+            <label class="small"><input type="checkbox" id="cfg-outbound" checked> 正向 outbound</label>
+            <label class="small"><input type="checkbox" id="cfg-inbound" checked> 反向 inbound</label>
+          </div>
+        </div>
+        <div class="field"><label>运行模式</label>
+          <label class="small"><input type="checkbox" id="cfg-onlyEval"> 仅评价当前方案 onlyEvaluation</label>
+        </div>
+        <div class="field"><label>寻优模式 mode</label>
+          <select id="cfg-mode"><option value="best">best（效果最好）</option><option value="fast">fast（速度优先）</option></select>
+        </div>
+        <div class="field"><label>GA 迭代代数 iterationNum</label>
+          <input type="number" id="cfg-iterationNum" class="num" value="20" min="1" max="200">
+        </div>
+      </div>
+      <details>
+        <summary>高级 GA / 分段参数（可选，留空使用后端默认值）</summary>
+        <div class="row" style="margin-top:10px">
+          <div class="field"><label>种群最小规模 gaPopulationMin</label><input type="number" id="cfg-gaPopulationMin" class="num" placeholder="默认"></div>
+          <div class="field"><label>种群最大规模 gaPopulationMax</label><input type="number" id="cfg-gaPopulationMax" class="num" placeholder="默认"></div>
+          <div class="field"><label>每个优化变量的种群数 gaPopulationPerVar</label><input type="number" id="cfg-gaPopulationPerVar" class="num" placeholder="默认"></div>
+          <div class="field"><label>早停最小迭代代数 gaEarlyStopMinGen</label><input type="number" id="cfg-gaEarlyStopMinGen" class="num" placeholder="默认"></div>
+          <div class="field"><label>早停容忍代数（连续 N 代无改进即停）gaEarlyStopPatience</label><input type="number" id="cfg-gaEarlyStopPatience" class="num" placeholder="默认"></div>
+          <div class="field"><label>早停最小改进幅度 gaEarlyStopMinImprovement</label><input type="number" id="cfg-gaEarlyStopMinImprovement" class="num" step="0.01" placeholder="默认"></div>
+          <div class="field"><label>启用分段初始方案 useSegmentedSeed</label>
+            <label class="small"><input type="checkbox" id="cfg-useSegmentedSeed"> 开启（长干线按段生成候选方案）</label>
+          </div>
+          <div class="field"><label>每段路口数 segmentCrossCount</label><input type="number" id="cfg-segmentCrossCount" class="num" placeholder="默认"></div>
+          <div class="field"><label>相邻段重叠路口数 segmentOverlapCrossCount</label><input type="number" id="cfg-segmentOverlapCrossCount" class="num" placeholder="默认"></div>
+        </div>
+      </details>
+    </div>
+    <div class="card">
+      <h3>请求 <span class="hint">POST /algorithm/invoke · {"func":"ts_generator","in":...}</span></h3>
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>服务地址（只填到 主机:端口，如 http://121.41.65.106:3001；默认 /api 走本页代理）</label>
+          <input type="text" id="apiBase" value="/api" style="width:100%">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="primary" id="runBtn" onclick="runRequest()">▶ 发起计算</button>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button onclick="drawFromInput()">用时距图预览输入方案</button>
+        </div>
+      </div>
+      <div id="runStatus"></div>
+      <details>
+        <summary>查看请求 JSON</summary>
+        <textarea class="code" id="payloadView" rows="10" readonly></textarea>
+      </details>
+    </div>
+    <div id="resultArea" style="display:none">
+      <div class="card">
+        <h3>评价指标 <span class="hint">evaluation</span></h3>
+        <div class="metric-grid" id="metricGrid"></div>
+      </div>
+      <div class="card">
+        <h3>相位差方案 <span class="hint">planInfo（相对=相邻路口间相位差，绝对=相对第一个路口累加值）</span></h3>
+        <table id="planTable">
+          <thead><tr><th>路口</th><th>相位时长</th><th>周期</th><th>协调相位</th><th>原相对</th><th>新相对</th><th>新绝对</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>绿波时距图 <span class="hint">横轴时间（秒，2个周期）· 纵轴距离 · 红绿带=各路口协调相位灯色 · 绿色菱形=相邻路口间绿波带宽（深绿=正向，青绿=反向）</span></h3>
+        <canvas id="tdCanvas" width="1080" height="400"></canvas>
+      </div>
+      <div class="card">
+        <details><summary>查看原始响应 JSON</summary>
+          <textarea class="code" id="responseView" rows="12" readonly></textarea>
+        </details>
+      </div>
+    </div>
+    <div class="step-actions"><button onclick="gotoStep(2)">← 上一步</button><span></span></div>
+  </section>
+</main>
+
+<script src="sketch.js"></script>
+<script>
+/* ==================== 编解码层（与 codec.js 同步，经 test_codec.js 验证） ==================== */
+const TsCodec = (function () {
+  'use strict';
+  const DIRS = [{id:1,name:'北'},{id:2,name:'东'},{id:3,name:'南'},{id:4,name:'西'}];
+  const TURN_BITS = [{bit:8,code:'t',name:'掉头'},{bit:4,code:'l',name:'左转'},{bit:2,code:'s',name:'直行'},{bit:1,code:'r',name:'右转'}];
+  const dirName = id => { const d = DIRS.find(x => x.id === Number(id)); return d ? d.name : String(id); };
+  const bitsToHexChar = bits => { let v = 0; bits.forEach(b => v |= Number(b)); return v.toString(16).toUpperCase(); };
+  const hexCharToBits = ch => { const v = parseInt(ch, 16); if (isNaN(v)) return []; return TURN_BITS.filter(t => v & t.bit).map(t => t.bit); };
+  const turnNames = bits => TURN_BITS.filter(t => bits.indexOf(t.bit) >= 0).map(t => t.name).join('+') || '无';
+
+  function encodeCrossInfo(channel, phases) {
+    const chanStr = channel.map(c => c.dir + ',' + (c.lanes || '') + ',' + (c.out === '' || c.out == null ? 1 : c.out)).join('|');
+    const phaseStr = phases.map(p => p.id + (p.moves || []).map(m => String(m.dir) + bitsToHexChar(m.bits)).join('')).join('|');
+    return chanStr + ';' + phaseStr;
+  }
+  function decodeCrossInfo(str) {
+    const parts = String(str || '').split(';');
+    const channel = [], phases = [];
+    (parts[0] || '').split('|').forEach(seg => {
+      if (!seg) return; const f = seg.split(','); if (f.length < 3) return;
+      channel.push({ dir: Number(f[0]), lanes: f[1], out: Number(f[2]) || 0 });
+    });
+    (parts[1] || '').split('|').forEach(seg => {
+      if (!seg) return;
+      const id = seg[0], moves = [], rest = seg.slice(1);
+      for (let i = 0; i + 1 < rest.length; i += 2) moves.push({ dir: Number(rest[i]), bits: hexCharToBits(rest[i + 1]) });
+      phases.push({ id, moves });
+    });
+    return { channel, phases };
+  }
+  function encodePlanInfo(timing, coordPhase, offset) {
+    return timing.map(x => x.id + String(x.duration)).join('') + ',' + (coordPhase || '') + String(Number(offset) || 0);
+  }
+  function decodePlanInfo(str) {
+    const parts = String(str || '').split(',');
+    const timing = []; const re = /([A-Za-z])(\d+)/g; let m;
+    while ((m = re.exec(parts[0] || '')) !== null) timing.push({ id: m[1], duration: Number(m[2]) });
+    const coord = parts[1] || '';
+    let offset = 0;
+    if (coord.length > 1) { const v = parseInt(coord.slice(1), 10); if (!isNaN(v)) offset = v; }
+    return { timing, coordPhase: coord ? coord[0] : '', offset, cycle: timing.reduce((s, x) => s + x.duration, 0) };
+  }
+  function inputToState(input) {
+    const state = {
+      crossList: (input.crossList || []).slice(),
+      roadLength: (input.roadLength || []).map(Number),
+      roadSpeed: { forward: (input.roadSpeed?.[0] || []).map(Number), backward: (input.roadSpeed?.[1] || []).map(Number) },
+      crosses: {},
+      config: Object.assign({ outbound: true, inbound: true, onlyEvaluation: false, mode: 'best', iterationNum: 20 }, input.config || {})
+    };
+    state.crossList.forEach(cid => {
+      const ci = decodeCrossInfo((input.crossInfo || {})[cid]);
+      const pi = decodePlanInfo((input.planInfo || {})[cid]);
+      const durations = {}; pi.timing.forEach(t => durations[t.id] = t.duration);
+      const flowObj = (input.crossFlow || {})[cid] || {};
+      state.crosses[cid] = {
+        channel: ci.channel, phases: ci.phases,
+        phaseOrder: pi.timing.map(t => t.id),
+        durations, coordPhase: pi.coordPhase, offset: pi.offset,
+        flows: Object.keys(flowObj).map(k => ({ dir: Number(k[0]), bit: Number(k.slice(1)), flow: Number(flowObj[k]) }))
+      };
+    });
+    return state;
+  }
+  function stateToInput(state) {
+    const crossInfo = {}, planInfo = {}, crossFlow = {};
+    state.crossList.forEach(cid => {
+      const c = state.crosses[cid];
+      crossInfo[cid] = encodeCrossInfo(c.channel, c.phases);
+      const phaseIds = c.phases.map(p => p.id);
+      const order = (c.phaseOrder || []).filter(id => phaseIds.indexOf(id) >= 0);
+      phaseIds.forEach(id => { if (order.indexOf(id) < 0) order.push(id); });
+      planInfo[cid] = encodePlanInfo(order.map(id => ({ id, duration: Number(c.durations[id]) || 0 })), c.coordPhase, c.offset);
+      const f = {};
+      (c.flows || []).forEach(row => { if (row.dir && row.bit) f[String(row.dir) + String(row.bit)] = Number(row.flow) || 0; });
+      crossFlow[cid] = f;
+    });
+    return {
+      crossList: state.crossList.slice(), roadLength: state.roadLength.map(Number),
+      crossInfo, planInfo,
+      roadSpeed: [state.roadSpeed.forward.map(Number), state.roadSpeed.backward.map(Number)],
+      crossFlow, config: state.config
+    };
+  }
+  // planInfo 中存储的是相对相位差——相邻路口协调相位绿窗起点之间的时间差。
+  // 时距图需要绝对相位差（offset + phaseStart = 绿窗绝对起点）。
+  // 转换：gs[0]=rel[0]+phaseStart[0]; gs[k]=gs[k-1]+rel[k]; abs_offset[k]=gs[k]-phaseStart[k]
+  function greenWindows(crossList, outPlanInfo) {
+    const decoded = crossList.map(cid => {
+      const pi = decodePlanInfo(outPlanInfo[cid]);
+      let phaseStart = 0;
+      for (const t of pi.timing) { if (t.id === pi.coordPhase) break; phaseStart += t.duration; }
+      const coord = pi.timing.find(t => t.id === pi.coordPhase);
+      return { cross: cid, cycle: pi.cycle, coordPhase: pi.coordPhase, offset: pi.offset,
+               phaseStart, greenDur: coord ? coord.duration : 0, timing: pi.timing };
+    });
+    let gs = 0;
+    decoded.forEach((g, i) => {
+      const c = g.cycle || 1;
+      if (i === 0) { gs = g.offset + g.phaseStart; }
+      else { gs = gs + g.offset; }
+      gs = ((gs % c) + c) % c;
+      g.relOffset = g.offset;
+      g.offset = ((gs - g.phaseStart) % c + c) % c;
+    });
+    return decoded;
+  }
+  function isGreenAt(t, g) {
+    if (!g.greenDur || !g.cycle) return false;
+    const rel = (((t - (g.offset + g.phaseStart)) % g.cycle) + g.cycle) % g.cycle;
+    return rel < g.greenDur;
+  }
+  // 计算 gi -> gj、行程时间 tau 秒时的最大绿波带（环形扫描一个公共周期）
+  function computeBand(gi, gj, tau) {
+    const C = Math.max(gi.cycle, gj.cycle);
+    if (!gi.greenDur || !gj.greenDur || !C) return null;
+    const step = 0.2;
+    const N = Math.max(1, Math.round(C / step));
+    const arr = [];
+    for (let k = 0; k < N; k++) arr.push(isGreenAt(k * step, gi) && isGreenAt(k * step + tau, gj));
+    const falseIdx = arr.indexOf(false);
+    if (falseIdx === -1) return { start: 0, len: C, cycle: C };
+    let bestLen = 0, bestStart = 0, curLen = 0, curStart = 0;
+    for (let k = 1; k <= N; k++) {
+      const idx = (falseIdx + k) % N;
+      if (arr[idx]) {
+        if (curLen === 0) curStart = idx;
+        curLen++;
+        if (curLen > bestLen) { bestLen = curLen; bestStart = curStart; }
+      } else curLen = 0;
+    }
+    if (bestLen === 0) return { start: 0, len: 0, cycle: C };
+    return { start: bestStart * step, len: bestLen * step, cycle: C };
+  }
+  return { DIRS, TURN_BITS, dirName, bitsToHexChar, hexCharToBits, turnNames,
+           encodeCrossInfo, decodeCrossInfo, encodePlanInfo, decodePlanInfo,
+           inputToState, stateToInput, greenWindows, isGreenAt, computeBand };
+})();
+
+/* ==================== 示例数据 ==================== */
+const EXAMPLE = {"crossList":["C1","C2","C3"],"roadLength":[117,558],"crossInfo":{"C1":"1,221,4|4,0,1|3,422,2;A1636|B47","C2":"1,4223,2|4,441,1|3,4223,2;C1434|A45|B1232","C3":"1,822,2|3,822,2;B3818|C2040|A1232"},"planInfo":{"C1":"A43B27,A0","C2":"A21B32C17,B0","C3":"A37B15C18,A-35"},"roadSpeed":[[52,66],[57,63]],"crossFlow":{"C1":{"11":88,"12":220,"18":44,"32":232,"34":28,"38":20,"41":24,"44":100,"48":60},"C2":{"11":108,"12":144,"18":20,"32":92,"34":56,"38":12,"41":40,"42":12,"44":204,"48":20},"C3":{"12":172,"18":12,"32":120,"38":72}},"config":{"outbound":true,"inbound":true,"onlyEvaluation":false,"mode":"best"}};
+
+/* ==================== 全局状态 ==================== */
+let state = null;
+let activeCross = 0;
+let lastResult = null;
+
+function defaultCross() {
+  return {
+    channel: [
+      { dir: 1, lanes: '22', out: 2 }, { dir: 2, lanes: '0', out: 1 },
+      { dir: 3, lanes: '22', out: 2 }, { dir: 4, lanes: '0', out: 1 }
+    ],
+    phases: [
+      { id: 'A', moves: [{ dir: 1, bits: [2] }, { dir: 3, bits: [2] }] },
+      { id: 'B', moves: [{ dir: 1, bits: [4] }, { dir: 3, bits: [4] }] }
+    ],
+    phaseOrder: ['A', 'B'], durations: { A: 40, B: 30 },
+    coordPhase: 'A', offset: 0, flows: []
+  };
+}
+
+function newState(n) {
+  state = { crossList: [], roadLength: [], roadSpeed: { forward: [], backward: [] }, crosses: {},
+            config: { outbound: true, inbound: true, onlyEvaluation: false, mode: 'best', iterationNum: 20 } };
+  for (let i = 0; i < n; i++) {
+    const cid = 'C' + (i + 1);
+    state.crossList.push(cid);
+    state.crosses[cid] = defaultCross();
+    if (i < n - 1) { state.roadLength.push(500); state.roadSpeed.forward.push(50); state.roadSpeed.backward.push(50); }
+  }
+}
+
+function saveLocal() { try { localStorage.setItem('tsg-state-v1', JSON.stringify(state)); } catch (e) {} }
+function loadLocal() { try { const s = localStorage.getItem('tsg-state-v1'); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+
+/* ==================== 步骤导航 ==================== */
+function gotoStep(i) {
+  document.querySelectorAll('nav.steps .step').forEach((el, k) => el.classList.toggle('active', k === i));
+  document.querySelectorAll('.panel').forEach((el, k) => el.classList.toggle('active', k === i));
+  if (i === 1) renderSegments();
+  if (i === 2) renderCrossTabs();
+  if (i === 3) updatePayloadView();
+}
+
+/* ==================== 步骤 1 ==================== */
+function renderCrossIdEditor() {
+  const box = document.getElementById('crossIdEditor');
+  box.innerHTML = '';
+  state.crossList.forEach((cid, i) => {
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.value = cid; inp.style.width = '70px';
+    inp.onchange = () => renameCross(i, inp.value.trim());
+    box.appendChild(inp);
+  });
+  document.getElementById('crossCount').value = state.crossList.length;
+}
+
+function renameCross(i, newId) {
+  if (!newId || newId === state.crossList[i]) { renderCrossIdEditor(); return; }
+  if (state.crossList.includes(newId)) { alert('编号重复'); renderCrossIdEditor(); return; }
+  const old = state.crossList[i];
+  state.crossList[i] = newId;
+  state.crosses[newId] = state.crosses[old];
+  delete state.crosses[old];
+  saveLocal(); renderCrossIdEditor();
+}
+
+function applyCrossCount() {
+  const n = Math.max(2, Math.min(12, Number(document.getElementById('crossCount').value) || 2));
+  const cur = state.crossList.length;
+  if (n > cur) {
+    for (let i = cur; i < n; i++) {
+      let cid = 'C' + (i + 1), k = i + 1;
+      while (state.crossList.includes(cid)) cid = 'C' + (++k);
+      state.crossList.push(cid);
+      state.crosses[cid] = defaultCross();
+    }
+    for (let i = cur - 1; i < n - 1; i++) {
+      if (state.roadLength[i] == null) { state.roadLength[i] = 500; state.roadSpeed.forward[i] = 50; state.roadSpeed.backward[i] = 50; }
+    }
+  } else if (n < cur) {
+    const removed = state.crossList.splice(n);
+    removed.forEach(cid => delete state.crosses[cid]);
+    state.roadLength.length = n - 1; state.roadSpeed.forward.length = n - 1; state.roadSpeed.backward.length = n - 1;
+  }
+  saveLocal(); renderCrossIdEditor();
+}
+
+function readConfigFromDom() {
+  const cfg = {
+    outbound: document.getElementById('cfg-outbound').checked,
+    inbound: document.getElementById('cfg-inbound').checked,
+    onlyEvaluation: document.getElementById('cfg-onlyEval').checked,
+    mode: document.getElementById('cfg-mode').value,
+    iterationNum: Number(document.getElementById('cfg-iterationNum').value) || 20
+  };
+  ['gaPopulationMin','gaPopulationMax','gaPopulationPerVar','gaEarlyStopMinGen','gaEarlyStopPatience',
+   'gaEarlyStopMinImprovement','segmentCrossCount','segmentOverlapCrossCount'].forEach(k => {
+    const v = document.getElementById('cfg-' + k).value;
+    if (v !== '') cfg[k] = Number(v);
+  });
+  if (document.getElementById('cfg-useSegmentedSeed').checked) cfg.useSegmentedSeed = true;
+  state.config = cfg;
+}
+
+function writeConfigToDom() {
+  const cfg = state.config || {};
+  document.getElementById('cfg-outbound').checked = cfg.outbound !== false;
+  document.getElementById('cfg-inbound').checked = cfg.inbound !== false;
+  document.getElementById('cfg-onlyEval').checked = !!cfg.onlyEvaluation;
+  document.getElementById('cfg-mode').value = cfg.mode || 'best';
+  document.getElementById('cfg-iterationNum').value = cfg.iterationNum || 20;
+  ['gaPopulationMin','gaPopulationMax','gaPopulationPerVar','gaEarlyStopMinGen','gaEarlyStopPatience',
+   'gaEarlyStopMinImprovement','segmentCrossCount','segmentOverlapCrossCount'].forEach(k => {
+    document.getElementById('cfg-' + k).value = cfg[k] != null ? cfg[k] : '';
+  });
+  document.getElementById('cfg-useSegmentedSeed').checked = !!cfg.useSegmentedSeed;
+}
+
+/* ==================== 步骤 2 ==================== */
+function renderSegments() {
+  const tb = document.querySelector('#segmentTable tbody');
+  tb.innerHTML = '';
+  for (let i = 0; i < state.crossList.length - 1; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><b>${state.crossList[i]}</b> → <b>${state.crossList[i + 1]}</b></td>`;
+    const mk = (val, fn) => {
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.className = 'num'; inp.value = val;
+      inp.onchange = () => { fn(Number(inp.value) || 0); saveLocal(); };
+      const td = document.createElement('td'); td.appendChild(inp); return td;
+    };
+    tr.appendChild(mk(state.roadLength[i], v => state.roadLength[i] = v));
+    tr.appendChild(mk(state.roadSpeed.forward[i], v => state.roadSpeed.forward[i] = v));
+    tr.appendChild(mk(state.roadSpeed.backward[i], v => state.roadSpeed.backward[i] = v));
+    tb.appendChild(tr);
+  }
+}
+
+/* ==================== 步骤 3 ==================== */
+function renderCrossTabs() {
+  const nav = document.getElementById('crossTabs');
+  nav.innerHTML = '';
+  if (activeCross >= state.crossList.length) activeCross = 0;
+
+  const title = document.createElement('div');
+  title.className = 'nav-title';
+  title.textContent = '选择要配置的路口（共 ' + state.crossList.length + ' 个）';
+  nav.appendChild(title);
+
+  state.crossList.forEach((cid, i) => {
+    const c = state.crosses[cid];
+    const cycle = (c.phaseOrder || []).reduce((s, id) => s + (Number(c.durations[id]) || 0), 0);
+    const item = document.createElement('div');
+    item.className = 'citem' + (i === activeCross ? ' active' : '');
+    item.innerHTML = '<div class="cid">' + (i + 1) + '. ' + cid + '</div>' +
+      '<div class="cinfo">周期 ' + cycle + 's · 协调相位 ' + (c.coordPhase || '-') +
+      ' · 相位差 ' + (c.offset || 0) + 's</div>';
+    item.onclick = () => { activeCross = i; renderCrossTabs(); };
+    nav.appendChild(item);
+  });
+
+  const btns = document.createElement('div');
+  btns.className = 'cnav-btns';
+  const prev = document.createElement('button');
+  prev.textContent = '← 上一路口';
+  prev.disabled = activeCross === 0;
+  prev.onclick = () => { if (activeCross > 0) { activeCross--; renderCrossTabs(); } };
+  const next = document.createElement('button');
+  next.textContent = '下一路口 →';
+  next.disabled = activeCross === state.crossList.length - 1;
+  next.onclick = () => { if (activeCross < state.crossList.length - 1) { activeCross++; renderCrossTabs(); } };
+  btns.appendChild(prev); btns.appendChild(next);
+  nav.appendChild(btns);
+
+  renderCrossEditor(state.crossList[activeCross]);
+}
+
+function dirSelect(cur, onchange) {
+  const sel = document.createElement('select');
+  TsCodec.DIRS.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.id; o.textContent = d.id + '（' + d.name + '）';
+    if (Number(cur) === d.id) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.onchange = () => { onchange(Number(sel.value)); saveLocal(); };
+  return sel;
+}
+
+function bitCheckboxes(bits, onchange) {
+  const box = document.createElement('span');
+  TsCodec.TURN_BITS.forEach(t => {
+    const lab = document.createElement('label');
+    lab.className = 'small'; lab.style.marginRight = '6px';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = bits.indexOf(t.bit) >= 0;
+    cb.onchange = () => {
+      const nb = TsCodec.TURN_BITS.filter(x => box.querySelector('[data-bit="' + x.bit + '"]').checked).map(x => x.bit);
+      onchange(nb); saveLocal();
+    };
+    cb.setAttribute('data-bit', t.bit);
+    lab.appendChild(cb); lab.appendChild(document.createTextNode(t.name));
+    box.appendChild(lab);
+  });
+  return box;
+}
+
+function renderCrossEditor(cid) {
+  const c = state.crosses[cid];
+  const root = document.getElementById('crossEditor');
+  root.innerHTML = '';
+
+  /* ---- 渠化 ---- */
+  const chanCard = document.createElement('div'); chanCard.className = 'card';
+  chanCard.innerHTML = `<h3>${cid} · 进口道渠化 <span class="hint">方向(1北2东3南4西) · 车道串(每字符一车道, 8掉4左2直1右的位组合) · 出口道数</span></h3>`;
+  const tbl = document.createElement('table');
+  tbl.innerHTML = '<thead><tr><th>进口道方位</th><th>车道（从左到右，点击车道块可删除）</th><th>车道串</th><th>出口道数</th><th></th></tr></thead>';
+  const tb = document.createElement('tbody');
+  c.channel.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    const tdDir = document.createElement('td');
+    tdDir.appendChild(dirSelect(row.dir, v => { row.dir = v; refreshEncoded(); }));
+    tr.appendChild(tdDir);
+
+    const tdChips = document.createElement('td');
+    const renderChips = () => {
+      tdChips.innerHTML = '';
+      String(row.lanes || '').split('').forEach((ch, li) => {
+        const chip = document.createElement('span');
+        chip.className = 'lane-chip';
+        chip.title = '点击删除该车道';
+        chip.textContent = TsCodec.turnNames(TsCodec.hexCharToBits(ch)) + ' [' + ch + ']';
+        chip.onclick = () => { row.lanes = row.lanes.slice(0, li) + row.lanes.slice(li + 1); renderAll(); };
+        tdChips.appendChild(chip);
+      });
+      const addBox = document.createElement('span');
+      let pending = [];
+      const cbs = bitCheckboxes([], nb => pending = nb);
+      addBox.appendChild(cbs);
+      const addBtn = document.createElement('button');
+      addBtn.textContent = '+车道'; addBtn.style.marginLeft = '4px';
+      addBtn.onclick = () => { if (!pending.length) return alert('请先勾选该车道的转向'); row.lanes = (row.lanes || '') + TsCodec.bitsToHexChar(pending); saveLocal(); renderAll(); };
+      addBox.appendChild(addBtn);
+      tdChips.appendChild(addBox);
+    };
+    renderChips();
+    tr.appendChild(tdChips);
+
+    const tdStr = document.createElement('td');
+    const laneInp = document.createElement('input');
+    laneInp.type = 'text'; laneInp.value = row.lanes; laneInp.style.width = '80px';
+    laneInp.onchange = () => { row.lanes = laneInp.value.trim().toUpperCase(); saveLocal(); renderAll(); };
+    tdStr.appendChild(laneInp); tr.appendChild(tdStr);
+
+    const tdOut = document.createElement('td');
+    const outInp = document.createElement('input');
+    outInp.type = 'number'; outInp.className = 'num'; outInp.value = row.out; outInp.min = 0;
+    outInp.onchange = () => { row.out = Number(outInp.value) || 0; saveLocal(); refreshEncoded(); };
+    tdOut.appendChild(outInp); tr.appendChild(tdOut);
+
+    const tdDel = document.createElement('td');
+    const del = document.createElement('button'); del.textContent = '删除'; del.className = 'danger';
+    del.onclick = () => { c.channel.splice(ri, 1); saveLocal(); renderAll(); };
+    tdDel.appendChild(del); tr.appendChild(tdDel);
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb);
+  const addApproach = document.createElement('button');
+  addApproach.textContent = '+ 添加进口道';
+  addApproach.onclick = () => { c.channel.push({ dir: 1, lanes: '22', out: 1 }); saveLocal(); renderAll(); };
+  const enc1 = document.createElement('div'); enc1.className = 'encoded'; enc1.id = 'enc-chan';
+  const chanMain = document.createElement('div'); chanMain.className = 'flex-main';
+  chanMain.appendChild(tbl); chanMain.appendChild(addApproach); chanMain.appendChild(enc1);
+  const chanSk = document.createElement('div'); chanSk.className = 'sketch-box';
+  chanSk.innerHTML = '<svg id="sk-chan"></svg><div class="sketch-cap">渠化示意图（右行：进口在右，绿线为中心线）</div>';
+  const chanFlex = document.createElement('div'); chanFlex.className = 'card-flex';
+  chanFlex.appendChild(chanMain); chanFlex.appendChild(chanSk);
+  chanCard.appendChild(chanFlex);
+  root.appendChild(chanCard);
+
+  /* ---- 相位 ---- */
+  const phCard = document.createElement('div'); phCard.className = 'card';
+  phCard.innerHTML = `<h3>${cid} · 相位组合 <span class="hint">相位字母 + 每2位一组(方位,转向掩码)，如 A1636</span></h3>`;
+  const ptbl = document.createElement('table');
+  ptbl.innerHTML = '<thead><tr><th style="width:80px">相位</th><th>放行转向（方位 + 转向）</th><th></th></tr></thead>';
+  const ptb = document.createElement('tbody');
+  c.phases.forEach((ph, pi) => {
+    const tr = document.createElement('tr');
+    const tdId = document.createElement('td');
+    const idInp = document.createElement('input');
+    idInp.type = 'text'; idInp.value = ph.id; idInp.maxLength = 1; idInp.style.width = '40px';
+    idInp.onchange = () => {
+      const nid = idInp.value.trim().toUpperCase() || ph.id;
+      if (c.phases.some((p, k) => k !== pi && p.id === nid)) return alert('相位编号重复');
+      if (c.durations[ph.id] != null) { c.durations[nid] = c.durations[ph.id]; delete c.durations[ph.id]; }
+      c.phaseOrder = c.phaseOrder.map(x => x === ph.id ? nid : x);
+      if (c.coordPhase === ph.id) c.coordPhase = nid;
+      ph.id = nid; saveLocal(); renderAll();
+    };
+    tdId.appendChild(idInp); tr.appendChild(tdId);
+
+    const tdMoves = document.createElement('td');
+    ph.moves.forEach((mv, mi) => {
+      const wrap = document.createElement('span');
+      wrap.style.cssText = 'display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:6px;padding:2px 6px;margin:2px';
+      wrap.appendChild(dirSelect(mv.dir, v => { mv.dir = v; refreshEncoded(); }));
+      wrap.appendChild(bitCheckboxes(mv.bits, nb => { mv.bits = nb; refreshEncoded(); }));
+      const del = document.createElement('button'); del.textContent = '×'; del.className = 'danger';
+      del.onclick = () => { ph.moves.splice(mi, 1); saveLocal(); renderAll(); };
+      wrap.appendChild(del);
+      tdMoves.appendChild(wrap);
+    });
+    const addMv = document.createElement('button'); addMv.textContent = '+转向';
+    addMv.onclick = () => { ph.moves.push({ dir: 1, bits: [2] }); saveLocal(); renderAll(); };
+    tdMoves.appendChild(addMv);
+    tr.appendChild(tdMoves);
+
+    const tdDel = document.createElement('td');
+    const delPh = document.createElement('button'); delPh.textContent = '删除相位'; delPh.className = 'danger';
+    delPh.onclick = () => {
+      c.phases.splice(pi, 1);
+      c.phaseOrder = c.phaseOrder.filter(x => x !== ph.id);
+      delete c.durations[ph.id];
+      if (c.coordPhase === ph.id) c.coordPhase = c.phaseOrder[0] || '';
+      saveLocal(); renderAll();
+    };
+    tdDel.appendChild(delPh); tr.appendChild(tdDel);
+    ptb.appendChild(tr);
+  });
+  ptbl.appendChild(ptb);
+  const addPh = document.createElement('button'); addPh.textContent = '+ 添加相位';
+  addPh.onclick = () => {
+    const used = c.phases.map(p => p.id);
+    const nid = 'ABCDEFGH'.split('').find(x => !used.includes(x));
+    if (!nid) return alert('相位过多');
+    c.phases.push({ id: nid, moves: [{ dir: 1, bits: [2] }] });
+    c.phaseOrder.push(nid); c.durations[nid] = 30;
+    saveLocal(); renderAll();
+  };
+  const enc2 = document.createElement('div'); enc2.className = 'encoded'; enc2.id = 'enc-phase';
+  const phMain = document.createElement('div'); phMain.className = 'flex-main';
+  phMain.appendChild(ptbl); phMain.appendChild(addPh); phMain.appendChild(enc2);
+  const phSk = document.createElement('div'); phSk.className = 'sketch-box';
+  phSk.innerHTML = '<svg id="sk-phase"></svg><div class="sketch-cap">相位放行示意图（橙框=协调相位，底部为相位时间轴）</div>';
+  const phFlex = document.createElement('div'); phFlex.className = 'card-flex';
+  phFlex.appendChild(phMain); phFlex.appendChild(phSk);
+  phCard.appendChild(phFlex);
+  root.appendChild(phCard);
+
+  /* ---- 信控方案 ---- */
+  const planCard = document.createElement('div'); planCard.className = 'card';
+  planCard.innerHTML = `<h3>${cid} · 相位时长与协调 <span class="hint">planInfo：执行顺序可上下调整，周期=各相位时长之和</span></h3>`;
+  const ptbl2 = document.createElement('table');
+  ptbl2.innerHTML = '<thead><tr><th>执行顺序</th><th>相位</th><th>时长（秒）</th><th>协调相位</th></tr></thead>';
+  const ptb2 = document.createElement('tbody');
+  c.phaseOrder.forEach((pid, oi) => {
+    const tr = document.createElement('tr');
+    const tdOrd = document.createElement('td');
+    const up = document.createElement('button'); up.textContent = '↑';
+    up.onclick = () => { if (oi > 0) { [c.phaseOrder[oi - 1], c.phaseOrder[oi]] = [c.phaseOrder[oi], c.phaseOrder[oi - 1]]; saveLocal(); renderAll(); } };
+    const dn = document.createElement('button'); dn.textContent = '↓';
+    dn.onclick = () => { if (oi < c.phaseOrder.length - 1) { [c.phaseOrder[oi + 1], c.phaseOrder[oi]] = [c.phaseOrder[oi], c.phaseOrder[oi + 1]]; saveLocal(); renderAll(); } };
+    tdOrd.appendChild(up); tdOrd.appendChild(dn); tr.appendChild(tdOrd);
+    const tdId = document.createElement('td'); tdId.innerHTML = '<b>' + pid + '</b>'; tr.appendChild(tdId);
+    const tdDur = document.createElement('td');
+    const dinp = document.createElement('input');
+    dinp.type = 'number'; dinp.className = 'num'; dinp.min = 1; dinp.value = c.durations[pid] || 30;
+    dinp.onchange = () => { c.durations[pid] = Number(dinp.value) || 30; saveLocal(); refreshEncoded(); };
+    tdDur.appendChild(dinp); tr.appendChild(tdDur);
+    const tdCoord = document.createElement('td');
+    const radio = document.createElement('input');
+    radio.type = 'radio'; radio.name = 'coord-' + cid; radio.checked = c.coordPhase === pid;
+    radio.onchange = () => { c.coordPhase = pid; saveLocal(); refreshEncoded(); };
+    tdCoord.appendChild(radio); tr.appendChild(tdCoord);
+    ptb2.appendChild(tr);
+  });
+  ptbl2.appendChild(ptb2); planCard.appendChild(ptbl2);
+  const offRow = document.createElement('div'); offRow.className = 'row'; offRow.style.marginTop = '10px';
+  offRow.innerHTML = '<div class="field"><label>当前相位差（秒，可负）</label></div>';
+  const oinp = document.createElement('input');
+  oinp.type = 'number'; oinp.className = 'num'; oinp.value = c.offset;
+  oinp.onchange = () => { c.offset = Number(oinp.value) || 0; saveLocal(); refreshEncoded(); };
+  offRow.querySelector('.field').appendChild(oinp);
+  planCard.appendChild(offRow);
+  const enc3 = document.createElement('div'); enc3.className = 'encoded'; enc3.id = 'enc-plan';
+  planCard.appendChild(enc3);
+  root.appendChild(planCard);
+
+  /* ---- 流量 ---- */
+  const flCard = document.createElement('div'); flCard.className = 'card';
+  flCard.innerHTML = `<h3>${cid} · 转向流量 <span class="hint">crossFlow：方位+转向(单转向) → 小时流量（veh/h）</span></h3>`;
+  const ftbl = document.createElement('table');
+  ftbl.innerHTML = '<thead><tr><th>进口道方位</th><th>转向</th><th>小时流量</th><th></th></tr></thead>';
+  const ftb = document.createElement('tbody');
+  c.flows.forEach((fl, fi) => {
+    const tr = document.createElement('tr');
+    const tdD = document.createElement('td');
+    tdD.appendChild(dirSelect(fl.dir, v => { fl.dir = v; refreshEncoded(); })); tr.appendChild(tdD);
+    const tdT = document.createElement('td');
+    const tsel = document.createElement('select');
+    TsCodec.TURN_BITS.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.bit; o.textContent = t.name + '（' + t.bit + '）';
+      if (fl.bit === t.bit) o.selected = true;
+      tsel.appendChild(o);
+    });
+    tsel.onchange = () => { fl.bit = Number(tsel.value); saveLocal(); refreshEncoded(); };
+    tdT.appendChild(tsel); tr.appendChild(tdT);
+    const tdF = document.createElement('td');
+    const finp = document.createElement('input');
+    finp.type = 'number'; finp.className = 'num'; finp.min = 0; finp.value = fl.flow;
+    finp.onchange = () => { fl.flow = Number(finp.value) || 0; saveLocal(); refreshEncoded(); };
+    tdF.appendChild(finp); tr.appendChild(tdF);
+    const tdDel = document.createElement('td');
+    const del = document.createElement('button'); del.textContent = '删除'; del.className = 'danger';
+    del.onclick = () => { c.flows.splice(fi, 1); saveLocal(); renderAll(); };
+    tdDel.appendChild(del); tr.appendChild(tdDel);
+    ftb.appendChild(tr);
+  });
+  ftbl.appendChild(ftb);
+  const btnRow = document.createElement('div'); btnRow.className = 'row'; btnRow.style.marginTop = '8px';
+  const addFl = document.createElement('button'); addFl.textContent = '+ 添加流量';
+  addFl.onclick = () => { c.flows.push({ dir: 1, bit: 2, flow: 0 }); saveLocal(); renderAll(); };
+  const genFl = document.createElement('button'); genFl.textContent = '按渠化补齐缺失转向';
+  genFl.onclick = () => {
+    c.channel.forEach(ch => {
+      String(ch.lanes || '').split('').forEach(lch => {
+        TsCodec.hexCharToBits(lch).forEach(bit => {
+          if (!c.flows.some(f => f.dir === ch.dir && f.bit === bit)) c.flows.push({ dir: ch.dir, bit, flow: 0 });
+        });
+      });
+    });
+    saveLocal(); renderAll();
+  };
+  btnRow.appendChild(addFl); btnRow.appendChild(genFl);
+  const enc4 = document.createElement('div'); enc4.className = 'encoded'; enc4.id = 'enc-flow';
+  const flMain = document.createElement('div'); flMain.className = 'flex-main';
+  flMain.appendChild(ftbl); flMain.appendChild(btnRow); flMain.appendChild(enc4);
+  const flSk = document.createElement('div'); flSk.className = 'sketch-box';
+  flSk.innerHTML = '<svg id="sk-flow"></svg><div class="sketch-cap">转向流量示意图（箭头粗细∝流量 veh/h，Σ为出口总量）</div>';
+  const flFlex = document.createElement('div'); flFlex.className = 'card-flex';
+  flFlex.appendChild(flMain); flFlex.appendChild(flSk);
+  flCard.appendChild(flFlex);
+  root.appendChild(flCard);
+
+  refreshEncoded();
+}
+
+function renderAll() { renderCrossTabs(); }
+
+/* ---- 示意图联动（sketch.js 未加载时静默跳过） ---- */
+function redrawSketches(c) {
+  if (typeof TsSketch === 'undefined') return;
+  const s1 = document.getElementById('sk-chan'); if (s1) TsSketch.drawChannel(s1, c);
+  const s2 = document.getElementById('sk-phase'); if (s2) TsSketch.drawPhase(s2, c, null);
+  const s3 = document.getElementById('sk-flow'); if (s3) TsSketch.drawFlow(s3, c);
+}
+
+function refreshEncoded() {
+  const cid = state.crossList[activeCross];
+  const c = state.crosses[cid];
+  const el1 = document.getElementById('enc-chan');
+  if (!el1) return;
+  const full = TsCodec.encodeCrossInfo(c.channel, c.phases);
+  el1.textContent = 'crossInfo 渠化段: ' + full.split(';')[0];
+  document.getElementById('enc-phase').textContent = 'crossInfo 相位段: ' + (full.split(';')[1] || '');
+  const order = c.phaseOrder.filter(id => c.phases.some(p => p.id === id));
+  const timing = order.map(id => ({ id, duration: Number(c.durations[id]) || 0 }));
+  document.getElementById('enc-plan').textContent =
+    'planInfo: ' + TsCodec.encodePlanInfo(timing, c.coordPhase, c.offset) +
+    '  （周期 ' + timing.reduce((s, x) => s + x.duration, 0) + ' 秒）';
+  const f = {};
+  c.flows.forEach(r => { if (r.dir && r.bit) f[String(r.dir) + String(r.bit)] = r.flow; });
+  document.getElementById('enc-flow').textContent = 'crossFlow: ' + JSON.stringify(f);
+  redrawSketches(c);
+}
+
+/* ==================== 导入/导出 ==================== */
+function loadExample() {
+  state = TsCodec.inputToState(EXAMPLE);
+  afterLoad();
+}
+function importJson(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      let data = JSON.parse(reader.result);
+      if (data && data.in) data = data.in;          // 兼容完整请求体
+      if (data && data.out) data = data.out;        // 兼容响应体
+      state = TsCodec.inputToState(data);
+      afterLoad();
+    } catch (e) { alert('JSON 解析失败: ' + e.message); }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+function afterLoad() {
+  activeCross = 0;
+  writeConfigToDom();
+  renderCrossIdEditor();
+  saveLocal();
+  gotoStep(0);
+}
+function exportJson() {
+  readConfigFromDom();
+  const payload = TsCodec.stateToInput(state);
+  const blob = new Blob([JSON.stringify({ func: 'ts_generator', in: payload }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ts-generator-request.json';
+  a.click();
+}
+function resetAll() {
+  if (!confirm('确定清空当前配置？')) return;
+  localStorage.removeItem('tsg-state-v1');
+  newState(3);
+  afterLoad();
+}
+
+/* ==================== 运行 ==================== */
+function updatePayloadView() {
+  readConfigFromDom();
+  const payload = TsCodec.stateToInput(state);
+  document.getElementById('payloadView').value = JSON.stringify({ func: 'ts_generator', in: payload }, null, 2);
+}
+
+function setStatus(cls, text) {
+  const el = document.getElementById('runStatus');
+  el.innerHTML = text ? '<div class="status ' + cls + '">' + text + '</div>' : '';
+}
+
+async function runRequest() {
+  readConfigFromDom();
+  const payload = TsCodec.stateToInput(state);
+  let base = document.getElementById('apiBase').value.replace(/\/+$/, '');
+  // 容错：用户粘贴了完整路径时自动去掉末尾的 /algorithm/invoke
+  base = base.replace(/\/algorithm\/invoke$/i, '');
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  const t0 = performance.now();
+  setStatus('info', '计算中… GA 全量运行可能需要数分钟，请耐心等待');
+  try {
+    const resp = await fetch(base + '/algorithm/invoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'ts_generator', in: payload })
+    });
+    const data = await resp.json();
+    const secs = ((performance.now() - t0) / 1000).toFixed(1);
+    if (!resp.ok) { setStatus('err', 'HTTP ' + resp.status + '\n' + JSON.stringify(data, null, 2)); return; }
+    if (data.out && data.out.error) { setStatus('err', '算法返回错误: ' + data.out.error + (data.out.traceback ? '\n' + data.out.traceback : '')); return; }
+    lastResult = data.out;
+    setStatus('ok', '计算完成，用时 ' + secs + ' 秒');
+    renderResults(payload);
+  } catch (e) {
+    setStatus('err', '请求失败: ' + e.message + '\n（如跨域被拒绝，请通过 serve.py 代理访问，默认地址 /api）');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderResults(reqPayload) {
+  const out = lastResult || {};
+  document.getElementById('resultArea').style.display = 'block';
+  document.getElementById('responseView').value = JSON.stringify(out, null, 2);
+
+  const ev = out.evaluation || {};
+  const mg = document.getElementById('metricGrid');
+  const fmt = (v, d) => (v == null ? '-' : Number(v).toFixed(d == null ? 2 : d));
+  mg.innerHTML = [
+    ['平均速度 (km/h)', fmt(ev.avgSpeed)], ['平均停车率', fmt(ev.avgParkingRatio)],
+    ['正向平均速度', fmt(ev.outbound && ev.outbound.avgSpeed)], ['正向停车率', fmt(ev.outbound && ev.outbound.avgParkingRatio)],
+    ['反向平均速度', fmt(ev.inbound && ev.inbound.avgSpeed)], ['反向停车率', fmt(ev.inbound && ev.inbound.avgParkingRatio)]
+  ].map(([k, v]) => '<div class="metric"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>').join('');
+
+  const tb = document.querySelector('#planTable tbody');
+  tb.innerHTML = '';
+  // 用 greenWindows 计算新方案的绝对相位差（考虑协调相位差异）
+  const gwAbs = TsCodec.greenWindows(state.crossList, out.planInfo || {});
+  state.crossList.forEach((cid, idx) => {
+    const o = TsCodec.decodePlanInfo((reqPayload.planInfo || {})[cid]);
+    const n = TsCodec.decodePlanInfo((out.planInfo || {})[cid]);
+    const absOff = gwAbs[idx] ? gwAbs[idx].offset : n.offset;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td><b>' + cid + '</b></td><td>' +
+      n.timing.map(t => t.id + ':' + t.duration + 's').join('，') + '</td><td>' + n.cycle + 's</td><td>' +
+      n.coordPhase + '</td><td><span class="badge old">' + o.offset + 's</span></td><td><span class="badge new">' +
+      n.offset + 's</span></td><td><span class="badge new">' + absOff + 's</span></td>';
+    tb.appendChild(tr);
+  });
+
+  drawDiagram(out.planInfo, reqPayload);
+}
+
+/* ==================== 绿波时距图 ==================== */
+function drawFromInput() {
+  readConfigFromDom();
+  const payload = TsCodec.stateToInput(state);
+  gotoStep(3);
+  document.getElementById('resultArea').style.display = 'block';
+  drawDiagram(payload.planInfo, payload);
+}
+
+function drawDiagram(planInfo, reqPayload) {
+  const canvas = document.getElementById('tdCanvas');
+  const ctx = canvas.getContext('2d');
+  const crossList = state.crossList;
+  const n = crossList.length;
+  const gws = TsCodec.greenWindows(crossList, planInfo);
+  const maxCycle = Math.max.apply(null, gws.map(g => g.cycle).concat([1]));
+  const xMax = maxCycle * 2;
+
+  const L = 110, R = 20, T = 34, B = 46;
+  const W = canvas.width;
+  const totalDist = (reqPayload.roadLength || []).reduce((s, x) => s + Number(x), 0);
+  const minRowPx = 46;
+  let heightByDist = totalDist > 0;
+  let H = Math.max(canvas.height, T + B + minRowPx * n);
+  if (heightByDist) {
+    // 动态增加画布高度，确保最小路段也能获得 minRowPx 像素
+    const minSeg = Math.min.apply(null, reqPayload.roadLength.map(Number));
+    if (minSeg > 0) {
+      const requiredPlotH = Math.ceil(minRowPx * totalDist / minSeg);
+      H = Math.max(H, T + B + requiredPlotH);
+    }
+    H = Math.max(H, 320);
+  }
+  if (H !== canvas.height) canvas.height = H;
+  const plotH = H - T - B;
+  // 纵轴：按累计距离排布，但保证最小行距
+  let ys = [];
+  if (heightByDist && totalDist > 0 && plotH / totalDist * Math.min.apply(null, reqPayload.roadLength) >= minRowPx) {
+    let acc = 0; ys = [T];
+    for (let i = 0; i < n - 1; i++) { acc += Number(reqPayload.roadLength[i]); ys.push(T + plotH * acc / totalDist); }
+  } else {
+    const gap = plotH / Math.max(1, n - 1);
+    ys = crossList.map((_, i) => T + gap * i);
+  }
+  const x2px = t => L + (W - L - R) * (t / xMax);
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.font = '12px system-ui';
+
+  // 时间网格
+  ctx.strokeStyle = '#e2e8f0'; ctx.fillStyle = '#64748b'; ctx.textAlign = 'center';
+  const tick = maxCycle >= 60 ? 10 : 5;
+  for (let t = 0; t <= xMax; t += tick) {
+    const x = x2px(t);
+    ctx.beginPath(); ctx.moveTo(x, T - 6); ctx.lineTo(x, H - B + 6); ctx.stroke();
+    if (t % (tick * 2) === 0 || t === xMax) ctx.fillText(t + 's', x, H - B + 22);
+  }
+  ctx.fillText('时间 →', W - R - 30, H - B + 40);
+
+  const bandH = 20;
+  // 每路口的红绿带
+  gws.forEach((g, i) => {
+    const y = ys[i];
+    // 红底
+    ctx.fillStyle = 'rgba(239,68,68,0.28)';
+    ctx.fillRect(L, y - bandH / 2, W - L - R, bandH);
+    // 绿窗：x0 = offset + phaseStart + k*cycle
+    ctx.fillStyle = 'rgba(34,197,94,0.75)';
+    for (let k = -2; k * g.cycle <= xMax + g.cycle; k++) {
+      let x0 = g.offset + g.phaseStart + k * g.cycle;
+      let x1 = x0 + g.greenDur;
+      // 处理跨周期回绕
+      while (x1 > 0 && x0 < xMax) {
+        const cx0 = Math.max(0, x0), cx1 = Math.min(xMax, x1);
+        if (cx1 > cx0) ctx.fillRect(x2px(cx0), y - bandH / 2, x2px(cx1) - x2px(cx0), bandH);
+        if (x1 <= xMax) break;
+        x0 -= g.cycle; x1 -= g.cycle; // 回绕部分
+        if (x1 <= 0) break;
+      }
+    }
+    // 路口标签
+    ctx.fillStyle = '#1e293b'; ctx.textAlign = 'right';
+    let acc = 0;
+    for (let j = 0; j < i; j++) acc += Number(reqPayload.roadLength[j] || 0);
+    ctx.fillText(g.cross + '（' + acc + 'm）', L - 8, y - 2);
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('协调' + g.coordPhase + ' 绝对' + g.offset + 's' + (g.relOffset !== undefined && g.relOffset !== g.offset ? '（相对' + g.relOffset + 's）' : ''), L - 8, y + 12);
+  });
+
+  // 绿波带（相邻路口间的可通行时间宽度，绘制为平行四边形）
+  const speeds = reqPayload.roadSpeed || [[], []];
+  const segTravel = (i, dirIdx) => {
+    const v = Number((speeds[dirIdx] || [])[i]) || 50; // km/h
+    return Number(reqPayload.roadLength[i]) / (v / 3.6); // s
+  };
+  const cfg = (state.config || {});
+
+  // 绘制一条绿波带：band={start,len,cycle}，从 yFrom 行到 yTo 行，行程 tau 秒
+  function drawBand(band, yFrom, yTo, tau, fill, stroke) {
+    if (!band || band.len <= 0) return;
+    ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.lineWidth = 1;
+    for (let k = -1; band.start + k * band.cycle < xMax; k++) {
+      const t1 = band.start + k * band.cycle;
+      const t2 = t1 + band.len;
+      // 平行四边形: (t1,yFrom) -> (t2,yFrom) -> (t2+tau,yTo) -> (t1+tau,yTo)
+      if (t2 + tau < 0 || t1 > xMax) continue;
+      ctx.beginPath();
+      ctx.moveTo(x2px(t1), yFrom);
+      ctx.lineTo(x2px(t2), yFrom);
+      ctx.lineTo(x2px(t2 + tau), yTo);
+      ctx.lineTo(x2px(t1 + tau), yTo);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  // 带宽数值标签（放在第一个周期带的中点）
+  function drawBandLabel(text, band, yFrom, yTo, tau, dy) {
+    if (!band || band.len <= 0) return;
+    const tm = band.start + band.len / 2 + tau / 2;
+    const x = Math.max(L + 20, Math.min(x2px(tm), W - R - 20));
+    const y = (yFrom + yTo) / 2 + dy;
+    ctx.font = 'bold 12px system-ui';
+    const w = ctx.measureText(text).width;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillRect(x - w / 2 - 4, y - 10, w + 8, 15);
+    ctx.fillStyle = '#14532d';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x, y + 2);
+    ctx.font = '12px system-ui';
+  }
+
+  for (let i = 0; i < n - 1; i++) {
+    // 正向：cross i -> i+1
+    if (cfg.outbound !== false) {
+      const tau = segTravel(i, 0);
+      const band = TsCodec.computeBand(gws[i], gws[i + 1], tau);
+      drawBand(band, ys[i], ys[i + 1], tau, 'rgba(22,163,74,0.35)', '#16a34a');
+      drawBandLabel('正向带宽 ' + (band ? band.len.toFixed(1) : '0') + 's', band, ys[i], ys[i + 1], tau, -8);
+    }
+    // 反向：cross i+1 -> i
+    if (cfg.inbound !== false) {
+      const tauB = segTravel(i, 1);
+      const bandB = TsCodec.computeBand(gws[i + 1], gws[i], tauB);
+      drawBand(bandB, ys[i + 1], ys[i], tauB, 'rgba(45,212,191,0.30)', '#0d9488');
+      drawBandLabel('反向带宽 ' + (bandB ? bandB.len.toFixed(1) : '0') + 's', bandB, ys[i + 1], ys[i], tauB, 16);
+    }
+  }
+
+  // 图例
+  ctx.textAlign = 'left';
+  const lg = [['rgba(34,197,94,0.75)', '协调相位绿灯'], ['rgba(239,68,68,0.4)', '红灯'],
+              ['rgba(22,163,74,0.5)', '正向绿波带'], ['rgba(45,212,191,0.5)', '反向绿波带']];
+  let lx = L + 6;
+  lg.forEach(([c, name]) => {
+    ctx.fillStyle = c; ctx.fillRect(lx, 8, 14, 10);
+    ctx.fillStyle = '#334155'; ctx.fillText(name, lx + 18, 17);
+    lx += 18 + ctx.measureText(name).width + 18;
+  });
+}
+
+/* ==================== 初始化 ==================== */
+(function init() {
+  state = loadLocal();
+  if (!state || !state.crossList || !state.crossList.length) state = TsCodec.inputToState(EXAMPLE);
+  writeConfigToDom();
+  renderCrossIdEditor();
+  const hm = (typeof location !== 'undefined' ? location.hash : '').match(/step(\d)/);   // 支持 #step2 直达（便于分享/调试）
+  if (hm) gotoStep(Math.min(3, Number(hm[1])));
+})();
+</script>
+</body>
+</html>

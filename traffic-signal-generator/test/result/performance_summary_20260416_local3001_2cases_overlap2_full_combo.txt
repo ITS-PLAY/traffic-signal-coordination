@@ -1,0 +1,10 @@
+=== traffic-signal-generator benchmark summary ===
+cases=2 repeat=1
+suite_avg_ms=229114.44 suite_max_p95_ms=283662.47 failures=0
+environment: os=Windows 11 10.0.26200 cpu_count=22 available_memory_gb=4.6
+overrides: useSegmentedSeed=True segmentOverlapRoads=None evaluator_url=http://127.0.0.1:3001 result_tag=20260416_local3001_2cases_overlap2_full_combo
+
+| case                     | avg_ms    | p95_ms    | fail | cross_num | road_length_m | avg_cross_flow |
+|--------------------------|-----------|-----------|------|-----------|---------------|----------------|
+| dengcaijie_suzhen-hehong | 174566.41 | 174566.41 | 0    | 5         | 1473          | 1250           |
+| fuchunlu_sanxin-jiangjin | 283662.47 | 283662.47 | 0    | 5         | 1197          | 1532           |

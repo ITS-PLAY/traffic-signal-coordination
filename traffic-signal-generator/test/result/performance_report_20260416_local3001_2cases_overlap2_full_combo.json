@@ -1,0 +1,56 @@
+{
+  "repeat": 1,
+  "case_count": 2,
+  "suite_avg_ms": 229114.44,
+  "suite_max_p95_ms": 283662.47,
+  "suite_failures": 0,
+  "environment": {
+    "os": "Windows 11 10.0.26200",
+    "cpu_count": 22,
+    "available_memory_gb": 4.6
+  },
+  "overrides": {
+    "use_segmented_seed": true,
+    "segment_overlap_roads": null,
+    "result_tag": "20260416_local3001_2cases_overlap2_full_combo",
+    "evaluator_url": "http://127.0.0.1:3001"
+  },
+  "cases": [
+    {
+      "case": "dengcaijie_suzhen-hehong.json",
+      "repeat": 1,
+      "success": 1,
+      "failures": 0,
+      "durations_ms": [
+        174566.41
+      ],
+      "avg_ms": 174566.41,
+      "min_ms": 174566.41,
+      "max_ms": 174566.41,
+      "p95_ms": 174566.41,
+      "errors": [],
+      "file_name": "dengcaijie_suzhen-hehong",
+      "cross_count": 5,
+      "road_length_sum": 1473,
+      "avg_cross_flow": 1250
+    },
+    {
+      "case": "fuchunlu_sanxin-jiangjin.json",
+      "repeat": 1,
+      "success": 1,
+      "failures": 0,
+      "durations_ms": [
+        283662.47
+      ],
+      "avg_ms": 283662.47,
+      "min_ms": 283662.47,
+      "max_ms": 283662.47,
+      "p95_ms": 283662.47,
+      "errors": [],
+      "file_name": "fuchunlu_sanxin-jiangjin",
+      "cross_count": 5,
+      "road_length_sum": 1197,
+      "avg_cross_flow": 1532
+    }
+  ]
+}

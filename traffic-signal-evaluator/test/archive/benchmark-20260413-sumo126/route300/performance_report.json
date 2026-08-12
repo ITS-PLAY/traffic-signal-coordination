@@ -1,0 +1,169 @@
+{
+  "repeat": 2,
+  "case_count": 8,
+  "suite_avg_ms": 891.01,
+  "suite_max_p95_ms": 1609.3,
+  "suite_failures": 0,
+  "evaluator_url": "http://localhost:3011",
+  "func_name": "ts_evaluator",
+  "path": "/algorithm/invoke",
+  "environment": {
+    "os": "Windows 11 10.0.26200",
+    "cpu_count": 22,
+    "available_memory_gb": 0.0
+  },
+  "cases": [
+    {
+      "case": "dengcaijie_jingchang-hehong.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        990.24,
+        993.25
+      ],
+      "avg_ms": 991.75,
+      "min_ms": 990.24,
+      "max_ms": 993.25,
+      "p95_ms": 993.1,
+      "errors": [],
+      "file_name": "dengcaijie_jingchang-hehong",
+      "cross_count": 6,
+      "road_length_sum": 1969,
+      "avg_cross_flow": 953
+    },
+    {
+      "case": "dengcaijie_jingchang_xiyuan.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        1283.18,
+        1180.83
+      ],
+      "avg_ms": 1232.01,
+      "min_ms": 1180.83,
+      "max_ms": 1283.18,
+      "p95_ms": 1278.06,
+      "errors": [],
+      "file_name": "dengcaijie_jingchang_xiyuan",
+      "cross_count": 8,
+      "road_length_sum": 3414,
+      "avg_cross_flow": 876
+    },
+    {
+      "case": "dengcaijie_suzhen-hehong.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        998.42,
+        949.17
+      ],
+      "avg_ms": 973.79,
+      "min_ms": 949.17,
+      "max_ms": 998.42,
+      "p95_ms": 995.96,
+      "errors": [],
+      "file_name": "dengcaijie_suzhen-hehong",
+      "cross_count": 5,
+      "road_length_sum": 1473,
+      "avg_cross_flow": 1250
+    },
+    {
+      "case": "fuchunlu_sanxin-jiangjin.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        1119.58,
+        1107.1
+      ],
+      "avg_ms": 1113.34,
+      "min_ms": 1107.1,
+      "max_ms": 1119.58,
+      "p95_ms": 1118.96,
+      "errors": [],
+      "file_name": "fuchunlu_sanxin-jiangjin",
+      "cross_count": 5,
+      "road_length_sum": 1197,
+      "avg_cross_flow": 1532
+    },
+    {
+      "case": "shuzhilu_shengtangba-ali.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        423.78,
+        415.84
+      ],
+      "avg_ms": 419.81,
+      "min_ms": 415.84,
+      "max_ms": 423.78,
+      "p95_ms": 423.38,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-ali",
+      "cross_count": 3,
+      "road_length_sum": 675,
+      "avg_cross_flow": 633
+    },
+    {
+      "case": "shuzhilu_shengtangba-yunxiao.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        327.85,
+        325.09
+      ],
+      "avg_ms": 326.47,
+      "min_ms": 325.09,
+      "max_ms": 327.85,
+      "p95_ms": 327.71,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-yunxiao",
+      "cross_count": 2,
+      "road_length_sum": 117,
+      "avg_cross_flow": 288
+    },
+    {
+      "case": "xiyuanlu_dunyu-zhenhua.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        1450.67,
+        1617.65
+      ],
+      "avg_ms": 1534.16,
+      "min_ms": 1450.67,
+      "max_ms": 1617.65,
+      "p95_ms": 1609.3,
+      "errors": [],
+      "file_name": "xiyuanlu_dunyu-zhenhua",
+      "cross_count": 7,
+      "road_length_sum": 1450,
+      "avg_cross_flow": 1525
+    },
+    {
+      "case": "zhenhualu_hehong-xiyuanba.json",
+      "repeat": 2,
+      "success": 2,
+      "failures": 0,
+      "durations_ms": [
+        515.1,
+        558.34
+      ],
+      "avg_ms": 536.72,
+      "min_ms": 515.1,
+      "max_ms": 558.34,
+      "p95_ms": 556.18,
+      "errors": [],
+      "file_name": "zhenhualu_hehong-xiyuanba",
+      "cross_count": 4,
+      "road_length_sum": 1341,
+      "avg_cross_flow": 717
+    }
+  ]
+}

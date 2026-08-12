@@ -1,0 +1,47 @@
+[
+  {
+    "variant": "baseline_no_segment",
+    "useSegmentedSeed": false,
+    "segmentOverlapRoads": null,
+    "solution_count": 75,
+    "elapsed_ms": 8624.919,
+    "profile": {
+      "band_prepare": 0.709,
+      "band_task_execute": 8623.579,
+      "task_count": 162,
+      "num_processes": 11,
+      "optional_solution_count": 75,
+      "serial_execution": false
+    }
+  },
+  {
+    "variant": "segmented_no_overlap",
+    "useSegmentedSeed": true,
+    "segmentOverlapRoads": 0,
+    "solution_count": 12,
+    "elapsed_ms": 4443.171,
+    "profile": {
+      "band_prepare": 0.863,
+      "band_task_execute": 4441.34,
+      "task_count": 60,
+      "num_processes": 11,
+      "optional_solution_count": 12,
+      "serial_execution": false
+    }
+  },
+  {
+    "variant": "segmented_with_overlap",
+    "useSegmentedSeed": true,
+    "segmentOverlapRoads": 1,
+    "solution_count": 75,
+    "elapsed_ms": 13470.63,
+    "profile": {
+      "band_prepare": 0.807,
+      "band_task_execute": 13469.008,
+      "task_count": 162,
+      "num_processes": 11,
+      "optional_solution_count": 75,
+      "serial_execution": false
+    }
+  }
+]

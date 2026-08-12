@@ -1,0 +1,18 @@
+# 本地验证用（非必需，SAE 部署时各自独立创建应用）
+services:
+  ts-evaluator:
+    image: ts-evaluator:1.0.0
+    container_name: ts-evaluator
+    ports:
+      - "3001:3001"
+
+  ts-generator:
+    image: ts-generator:1.0.0
+    container_name: ts-generator
+    environment:
+      # generator 通过 HTTP 调用 evaluator 的仿真评价能力
+      EVALUATOR_URL: http://ts-evaluator:3001
+    ports:
+      - "3002:3001"
+    depends_on:
+      - ts-evaluator

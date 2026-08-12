@@ -1,0 +1,177 @@
+{
+  "repeat": 3,
+  "case_count": 8,
+  "suite_avg_ms": 982.17,
+  "suite_max_p95_ms": 1576.62,
+  "suite_failures": 0,
+  "evaluator_url": "http://127.0.0.1:3001",
+  "func_name": "ts_evaluator",
+  "path": "/algorithm/invoke",
+  "environment": {
+    "os": "Windows 11 10.0.26200",
+    "cpu_count": 22,
+    "available_memory_gb": 8.03
+  },
+  "cases": [
+    {
+      "case": "dengcaijie_jingchang-hehong.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        1184.32,
+        1043.39,
+        1143.49
+      ],
+      "avg_ms": 1123.73,
+      "min_ms": 1043.39,
+      "max_ms": 1184.32,
+      "p95_ms": 1180.24,
+      "errors": [],
+      "file_name": "dengcaijie_jingchang-hehong",
+      "cross_count": 6,
+      "road_length_sum": 1969,
+      "avg_cross_flow": 953
+    },
+    {
+      "case": "dengcaijie_jingchang_xiyuan.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        1314.26,
+        1335.38,
+        1379.86
+      ],
+      "avg_ms": 1343.17,
+      "min_ms": 1314.26,
+      "max_ms": 1379.86,
+      "p95_ms": 1375.41,
+      "errors": [],
+      "file_name": "dengcaijie_jingchang_xiyuan",
+      "cross_count": 8,
+      "road_length_sum": 3414,
+      "avg_cross_flow": 876
+    },
+    {
+      "case": "dengcaijie_suzhen-hehong.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        1125.19,
+        1199.85,
+        1250.65
+      ],
+      "avg_ms": 1191.9,
+      "min_ms": 1125.19,
+      "max_ms": 1250.65,
+      "p95_ms": 1245.57,
+      "errors": [],
+      "file_name": "dengcaijie_suzhen-hehong",
+      "cross_count": 5,
+      "road_length_sum": 1473,
+      "avg_cross_flow": 1250
+    },
+    {
+      "case": "fuchunlu_sanxin-jiangjin.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        1317.65,
+        1359.48,
+        1236.27
+      ],
+      "avg_ms": 1304.47,
+      "min_ms": 1236.27,
+      "max_ms": 1359.48,
+      "p95_ms": 1355.3,
+      "errors": [],
+      "file_name": "fuchunlu_sanxin-jiangjin",
+      "cross_count": 5,
+      "road_length_sum": 1197,
+      "avg_cross_flow": 1532
+    },
+    {
+      "case": "shuzhilu_shengtangba-ali.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        444.71,
+        437.38,
+        454.1
+      ],
+      "avg_ms": 445.4,
+      "min_ms": 437.38,
+      "max_ms": 454.1,
+      "p95_ms": 453.16,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-ali",
+      "cross_count": 3,
+      "road_length_sum": 675,
+      "avg_cross_flow": 633
+    },
+    {
+      "case": "shuzhilu_shengtangba-yunxiao.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        361.68,
+        360.71,
+        359.72
+      ],
+      "avg_ms": 360.7,
+      "min_ms": 359.72,
+      "max_ms": 361.68,
+      "p95_ms": 361.58,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-yunxiao",
+      "cross_count": 2,
+      "road_length_sum": 117,
+      "avg_cross_flow": 288
+    },
+    {
+      "case": "xiyuanlu_dunyu-zhenhua.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        1467.68,
+        1488.19,
+        1586.44
+      ],
+      "avg_ms": 1514.1,
+      "min_ms": 1467.68,
+      "max_ms": 1586.44,
+      "p95_ms": 1576.62,
+      "errors": [],
+      "file_name": "xiyuanlu_dunyu-zhenhua",
+      "cross_count": 7,
+      "road_length_sum": 1450,
+      "avg_cross_flow": 1525
+    },
+    {
+      "case": "zhenhualu_hehong-xiyuanba.json",
+      "repeat": 3,
+      "success": 3,
+      "failures": 0,
+      "durations_ms": [
+        543.79,
+        639.21,
+        538.8
+      ],
+      "avg_ms": 573.93,
+      "min_ms": 538.8,
+      "max_ms": 639.21,
+      "p95_ms": 629.67,
+      "errors": [],
+      "file_name": "zhenhualu_hehong-xiyuanba",
+      "cross_count": 4,
+      "road_length_sum": 1341,
+      "avg_cross_flow": 717
+    }
+  ]
+}

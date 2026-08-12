@@ -1,0 +1,57 @@
+{
+  "repeat": 1,
+  "case_count": 2,
+  "suite_avg_ms": 1078263.42,
+  "suite_max_p95_ms": 2076086.04,
+  "suite_failures": 1,
+  "environment": {
+    "os": "Windows 11 10.0.26200",
+    "cpu_count": 22,
+    "available_memory_gb": 3.9
+  },
+  "overrides": {
+    "use_segmented_seed": true,
+    "result_tag": "20260415_segmented_seed_baseline",
+    "evaluator_url": "http://127.0.0.1:3011"
+  },
+  "cases": [
+    {
+      "case": "shuzhilu_shengtangba-ali.json",
+      "repeat": 1,
+      "success": 1,
+      "failures": 0,
+      "durations_ms": [
+        2076086.04
+      ],
+      "avg_ms": 2076086.04,
+      "min_ms": 2076086.04,
+      "max_ms": 2076086.04,
+      "p95_ms": 2076086.04,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-ali",
+      "cross_count": 3,
+      "road_length_sum": 675,
+      "avg_cross_flow": 633
+    },
+    {
+      "case": "shuzhilu_shengtangba-yunxiao.json",
+      "repeat": 1,
+      "success": 0,
+      "failures": 1,
+      "durations_ms": [
+        80440.8
+      ],
+      "avg_ms": 80440.8,
+      "min_ms": 80440.8,
+      "max_ms": 80440.8,
+      "p95_ms": 80440.8,
+      "errors": [
+        "generator request failed: error=cannot access local variable 'output' where it is not associated with a value, traceback=Traceback (most recent call last):\n  File \"D:\\SUMO\\traffic-signal-generator\\main.py\", line 150, in main\n    log.info('output of algorithm: {}'.format(output))\n                                              ^^^^^^\nUnboundLocalError: cannot access local variable 'output' where it is not associated with a value\n"
+      ],
+      "file_name": "shuzhilu_shengtangba-yunxiao",
+      "cross_count": 2,
+      "road_length_sum": 117,
+      "avg_cross_flow": 288
+    }
+  ]
+}

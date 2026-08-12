@@ -1,0 +1,121 @@
+default:
+  image: glr.ge.cn/mirrors/ci:go-1.23.2-bookworm
+  tags:
+    - zhjt
+
+variables:
+  DEPLOY:
+    value: "1"
+    description: "是否部署到开发环境，改为 1 表示部署"
+  PERF_REPEAT: "3"
+  PERF_MAX_AVG_MS: "0"
+  PERF_MAX_P95_MS: "0"
+  APP_NAME: "ts-evaluator"
+
+stages:
+  - build
+  - benchmark
+  - review
+
+before_script: |
+  go env -w GOPROXY=goproxy.cn,direct
+  go env -w 'GOPRIVATE=*.ge.cn'
+  if [ "x$CI_USER" != "x" ]; then
+    echo "https://$CI_USER:$CI_PASSWORD@gl.ge.cn" > /root/.git-ci-credentials
+    git config --global credential.helper 'store --file=/root/.git-ci-credentials'
+  fi
+  if command -v docker >/dev/null && [ "x$REGISTRY_USER" != "x" ]; then
+    docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY
+    helm registry login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY
+  fi
+
+.go-cache:
+  cache:
+    paths:
+      - .go/pkg/
+
+.benchmark-evaluator:
+  stage: benchmark
+  image: cr.ytsd.cc/mirrors/hub/library/python:3.11.4-bookworm
+  before_script: []
+  variables:
+    EVALUATOR_URL: http://ts-evaluator:80
+    HOST: ts-evaluator
+    PORT: "80"
+  needs:
+    - job: Build
+      artifacts: true
+  services:
+    - name: $EVALUATOR_IMAGE
+      alias: ts-evaluator
+      variables:
+        PORT: "80"
+        LISTEN: "0.0.0.0"
+      entrypoint:
+        - /bin/sh
+        - -lc
+      command:
+        - |
+          mkdir -p /app/config
+          cat > /app/config/config.yaml <<'EOF'
+          DEBUG: false
+          EOF
+          exec /app/algo-api
+  script:
+    - mkdir -p test/result
+    - touch test/result/performance_report.json test/result/performance_summary.txt
+    - python -m pip install --no-cache-dir -r requirements-benchmark.txt
+    - python test/test_performance.py
+  artifacts:
+    when: always
+    paths:
+      - test/result/performance_report.json
+      - test/result/performance_summary.txt
+    expire_in: 14 days
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: always
+
+Build:
+  stage: build
+  extends: .go-cache
+  script:
+    - export VERSION=1.0.0-build.${CI_PIPELINE_ID}.${CI_JOB_ID}
+    - ./build.sh
+    - echo "EVALUATOR_IMAGE=cr.ytsd.cc/zhjt/${APP_NAME}:${VERSION}" > build.env
+  artifacts:
+    when: always
+    reports:
+      dotenv: build.env
+    paths:
+      - build.env
+    expire_in: 14 days
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: always
+
+Benchmark:
+  extends: .benchmark-evaluator
+
+Review:
+  stage: review
+  script: |
+    set -x
+    curl -X POST \
+      --fail \
+      -F token=$CODE_REVIEW_AGENT_TOKEN \
+      -F "ref=main" \
+      -F "variables[TARGET_MERGE_REQUEST_PROJECT_PATH]=$CI_MERGE_REQUEST_PROJECT_PATH" \
+      -F "variables[TARGET_MERGE_REQUEST_IID]=$CI_MERGE_REQUEST_IID" \
+      -F "variables[TARGET_MERGE_REQUEST_PROJECT_ID]=$CI_MERGE_REQUEST_PROJECT_ID" \
+      -F "variables[TARGET_MERGE_REQUEST_TARGET_BRANCH_NAME]=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" \
+      -F "variables[TARGET_MERGE_REQUEST_SOURCE_BRANCH_NAME]=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" \
+      https://gl.ge.cn/api/v4/projects/508/trigger/pipeline
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID'
+      when: always
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: never

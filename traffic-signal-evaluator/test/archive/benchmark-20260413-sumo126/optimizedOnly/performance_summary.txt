@@ -1,0 +1,16 @@
+=== traffic-signal-evaluator benchmark summary ===
+url=http://localhost:3011/algorithm/invoke func=ts_evaluator
+cases=8 repeat=2
+suite_avg_ms=1002.43 suite_max_p95_ms=1677.59 failures=0
+environment: os=Windows 11 10.0.26200 cpu_count=22 available_memory_gb=0.0
+
+| case                         | avg_ms  | p95_ms  | fail | cross_num | road_length_m | avg_cross_flow |
+|------------------------------|---------|---------|------|-----------|---------------|----------------|
+| shuzhilu_shengtangba-yunxiao | 388.31  | 399.07  | 0    | 2         | 117           | 288            |
+| shuzhilu_shengtangba-ali     | 461.15  | 475.86  | 0    | 3         | 675           | 633            |
+| zhenhualu_hehong-xiyuanba    | 607.11  | 637.81  | 0    | 4         | 1341          | 717            |
+| dengcaijie_suzhen-hehong     | 1054.29 | 1054.60 | 0    | 5         | 1473          | 1250           |
+| fuchunlu_sanxin-jiangjin     | 1408.82 | 1533.66 | 0    | 5         | 1197          | 1532           |
+| dengcaijie_jingchang-hehong  | 1085.34 | 1085.90 | 0    | 6         | 1969          | 953            |
+| xiyuanlu_dunyu-zhenhua       | 1651.88 | 1677.59 | 0    | 7         | 1450          | 1525           |
+| dengcaijie_jingchang_xiyuan  | 1362.55 | 1394.98 | 0    | 8         | 3414          | 876            |

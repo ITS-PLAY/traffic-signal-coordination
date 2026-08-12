@@ -1,0 +1,46 @@
+[
+  {
+    "case": "dengcaijie_suzhen-hehong",
+    "avg_ms": 126519.27,
+    "cross_count": 5,
+    "planInfo": {
+      "C1": "A64B26C40,A0",
+      "C2": "A38B25C42D25,C10",
+      "C3": "A64B26C40,A25",
+      "C4": "A71B26C33,A125",
+      "C5": "A44B26C34D26,A23"
+    },
+    "evaluation": {
+      "outbound": {
+        "avgParkingRatio": 0.401734,
+        "avgSpeed": 37.884881
+      },
+      "inbound": {
+        "avgParkingRatio": 0.342262,
+        "avgSpeed": 40.050051
+      }
+    }
+  },
+  {
+    "case": "fuchunlu_sanxin-jiangjin",
+    "avg_ms": 177066.43,
+    "cross_count": 5,
+    "planInfo": {
+      "C1": "A42B35C63,C0",
+      "C2": "A98B42,A17",
+      "C3": "A33B24C59D24,C19",
+      "C4": "A58B22C38D22,A6",
+      "C5": "A38B42C36D24,A34"
+    },
+    "evaluation": {
+      "outbound": {
+        "avgParkingRatio": 0.280864,
+        "avgSpeed": 33.029565
+      },
+      "inbound": {
+        "avgParkingRatio": 0.372624,
+        "avgSpeed": 35.332385
+      }
+    }
+  }
+]

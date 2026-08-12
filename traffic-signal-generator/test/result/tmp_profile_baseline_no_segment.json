@@ -1,0 +1,15 @@
+{
+  "variant": "baseline_no_segment",
+  "useSegmentedSeed": false,
+  "segmentOverlapRoads": null,
+  "solution_count": 0,
+  "elapsed_ms": 1959.069,
+  "profile": {
+    "band_prepare": 0.912,
+    "band_task_execute": 1957.251,
+    "task_count": 162,
+    "num_processes": 11,
+    "optional_solution_count": 0,
+    "serial_execution": false
+  }
+}

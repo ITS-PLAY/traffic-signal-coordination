@@ -1,0 +1,55 @@
+{
+  "repeat": 1,
+  "case_count": 2,
+  "suite_avg_ms": 26035.51,
+  "suite_max_p95_ms": 35667.3,
+  "suite_failures": 0,
+  "environment": {
+    "os": "Windows 11 10.0.26200",
+    "cpu_count": 22,
+    "available_memory_gb": 3.3
+  },
+  "overrides": {
+    "use_segmented_seed": true,
+    "result_tag": "20260415_segmented_seed_local3001_2cases_optimized",
+    "evaluator_url": "http://127.0.0.1:3001"
+  },
+  "cases": [
+    {
+      "case": "shuzhilu_shengtangba-ali.json",
+      "repeat": 1,
+      "success": 1,
+      "failures": 0,
+      "durations_ms": [
+        35667.3
+      ],
+      "avg_ms": 35667.3,
+      "min_ms": 35667.3,
+      "max_ms": 35667.3,
+      "p95_ms": 35667.3,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-ali",
+      "cross_count": 3,
+      "road_length_sum": 675,
+      "avg_cross_flow": 633
+    },
+    {
+      "case": "shuzhilu_shengtangba-yunxiao.json",
+      "repeat": 1,
+      "success": 1,
+      "failures": 0,
+      "durations_ms": [
+        16403.72
+      ],
+      "avg_ms": 16403.72,
+      "min_ms": 16403.72,
+      "max_ms": 16403.72,
+      "p95_ms": 16403.72,
+      "errors": [],
+      "file_name": "shuzhilu_shengtangba-yunxiao",
+      "cross_count": 2,
+      "road_length_sum": 117,
+      "avg_cross_flow": 288
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+name: __APP_NAME__
+
+image:
+  repository: cr.ytsd.cc/zhjt/__APP_NAME__
+  tag: __VERSION__
+
+nginx:
+  image:
+    repository: cr.ytsd.cc/mirrors/hub/library/nginx
+    tag: 1.23.4-bullseye
+
+imagePullSecrets:
+  - name: regcred
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "4"
+    memory: 8Gi

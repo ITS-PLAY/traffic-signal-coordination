@@ -1,0 +1,15 @@
+{
+  "variant": "segmented_with_overlap",
+  "useSegmentedSeed": true,
+  "segmentOverlapRoads": 1,
+  "solution_count": 0,
+  "elapsed_ms": 3699.381,
+  "profile": {
+    "band_prepare": 0.862,
+    "band_task_execute": 3697.75,
+    "task_count": 162,
+    "num_processes": 11,
+    "optional_solution_count": 0,
+    "serial_execution": false
+  }
+}

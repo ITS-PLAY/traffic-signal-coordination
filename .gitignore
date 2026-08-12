@@ -1,0 +1,41 @@
+# ===== 内部工具目录（不进入版本库）=====
+.workbuddy/
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ===== Node =====
+node_modules/
+
+# ===== 部署产物（大体积镜像 tar，不入库）=====
+deploy/dist/*.tar
+
+# ===== 前端临时文件（Edge 无头截图 profile / 截图）=====
+deploy/frontend/_ep*/
+deploy/frontend/_edgeprof*/
+deploy/frontend/_*.png
+deploy/frontend$3.png
+
+# ===== 运行时仿真产物 =====
+traffic-signal-evaluator/result/
+traffic-signal-evaluator/tmp/
+
+# ===== 日志 =====
+*.log
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== IDE =====
+.idea/
+.vscode/

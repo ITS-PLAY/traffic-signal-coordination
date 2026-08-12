@@ -1,0 +1,10 @@
+=== traffic-signal-generator benchmark summary ===
+cases=2 repeat=1
+suite_avg_ms=26035.51 suite_max_p95_ms=35667.3 failures=0
+environment: os=Windows 11 10.0.26200 cpu_count=22 available_memory_gb=3.3
+overrides: useSegmentedSeed=True evaluator_url=http://127.0.0.1:3001 result_tag=20260415_segmented_seed_local3001_2cases_optimized
+
+| case                         | avg_ms   | p95_ms   | fail | cross_num | road_length_m | avg_cross_flow |
+|------------------------------|----------|----------|------|-----------|---------------|----------------|
+| shuzhilu_shengtangba-yunxiao | 16403.72 | 16403.72 | 0    | 2         | 117           | 288            |
+| shuzhilu_shengtangba-ali     | 35667.30 | 35667.30 | 0    | 3         | 675           | 633            |

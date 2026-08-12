@@ -1,0 +1,5 @@
+--index-url https://pypi.tuna.tsinghua.edu.cn/simple
+numpy
+pymoo
+gekko
+requests==2.31.0
