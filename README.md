@@ -138,9 +138,3 @@ curl -X POST http://121.41.65.106:8080/api/algorithm/invoke \
 
 输入样例见 `traffic-signal-generator/test/benchmark/`，
 响应 `{"out": {...}}` 含各路口相位差方案与仿真评价指标。
-
-## 说明
-
-- 原 `algorithm-api-base`（Go）依赖私有 GitLab `gl.ge.cn/labs/glite`，当前环境不可达，
-  故改用 Flask + Gunicorn 直接包装算法 `main()`；HTTP API 契约与原服务完全一致，调用方无需改造。
-- 原 Go 服务的 SSE 流式接口（`/algorithm/sse`）未包含在本镜像中，同步接口 `/algorithm/invoke` 功能完整。
